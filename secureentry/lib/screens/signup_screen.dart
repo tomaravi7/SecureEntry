@@ -1,7 +1,8 @@
-// lib/screens/signup_screen.dart
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mailer/mailer.dart';
+import 'package:mailer/smtp_server.dart';
 
 class SignupScreen extends StatefulWidget {
   @override
@@ -14,34 +15,77 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _houseController = TextEditingController();
   String _userType = 'resident'; // Default to resident
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
+    super.dispose();
+  }
 
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
       try {
-        final response = await Supabase.instance.client.auth.signUp(
-          email: _emailController.text,
-          password: _passwordController.text,
-          data: {
-            'name': _nameController.text,
-            'phone': _phoneController.text,
-            'user_type': _userType,
-          },
-        );
+        final response =
+            await Supabase.instance.client.from('pending_accounts').insert({
+          'email': _emailController.text,
+          'name': _nameController.text,
+          'phone': _phoneController.text,
+          'user_type': _userType,
+          'address': _houseController.text,
+          'status': 'pending',
+        }).execute();
 
-        if (response.user != null) {
-          // Signup successful
+        if (response.status == 201) {
+          // Signup request successful
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Signup successful! Please check your email to verify your account.')),
+            SnackBar(
+                content: Text(
+                    'Signup request submitted. Please wait for admin approval.')),
           );
-          // Navigate to login screen or home screen based on your app flow
+          _sendPasswordEmail(_emailController.text, _passwordController.text);
+          // Navigate back to login screen
           context.go('/');
         }
+      } on PostgrestException catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Signup request failed: ${error.message}')),
+        );
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Signup failed: $error')),
+          SnackBar(content: Text('An unexpected error occurred: $error')),
         );
+      } finally {
+        if (mounted) {
+          setState(() {});
+        }
       }
+    }
+  }
+
+  Future<void> _sendPasswordEmail(String email, String pass) async {
+    String username = 'tomaravi7@gmail.com'; // Your email
+    String password = 'zccb lvrg zubr srsc'; // Your email password
+
+    final smtpServer = gmail(username, password); // Using Gmail SMTP server
+
+    final message = Message()
+      ..from = Address(username, 'SECURE ENTRY ')
+      ..recipients.add(email)
+      ..subject = 'Your New Password'
+      ..text =
+          'Your new password is: DEFAULT \n\nPlease change this password after logging in.';
+
+    try {
+      final sendReport = await send(message, smtpServer);
+      print('Message sent: ' + sendReport.toString());
+    } on MailerException catch (e) {
+      print('Message not sent. ${e.toString()}');
+      throw e;
     }
   }
 
@@ -62,6 +106,17 @@ class _SignupScreenState extends State<SignupScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your name';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _houseController,
+                decoration: InputDecoration(labelText: 'Address'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your address';
                   }
                   return null;
                 },
@@ -94,17 +149,20 @@ class _SignupScreenState extends State<SignupScreen> {
               SizedBox(height: 16),
               TextFormField(
                 controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters long';
-                  }
-                  return null;
-                },
+                decoration: InputDecoration(
+                    labelText: 'Password',
+                    hintText: "Password will be sent to you via email"),
+                // obscureText: true,
+                enabled: false,
+                // validator: (value) {
+                //   if (value == null || value.isEmpty) {
+                //     return 'Please enter a password';
+                //   }
+                //   if (value.length < 6) {
+                //     return 'Password must be at least 6 characters long';
+                //   }
+                //   return null;
+                // },
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<String>(

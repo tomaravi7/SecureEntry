@@ -1,11 +1,172 @@
 import 'package:flutter/material.dart';
+import 'package:secureentry/router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-class GuardHomeScreen extends StatelessWidget {
+class GuardHomeScreen extends StatefulWidget {
+  @override
+  _GuardHomeScreenState createState() => _GuardHomeScreenState();
+}
+
+class _GuardHomeScreenState extends State<GuardHomeScreen> {
+  List<Map<String, dynamic>> _notifications = [];
+  List<Map<String, dynamic>> _filteredNotifications = [];
+  bool _isLoading = false;
+  String _errorMessage = '';
+
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchNotifications();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _logout() async {
+    try {
+      await Supabase.instance.client.auth.signOut();
+      router.go('/');
+    } catch (e) {
+      print('Error during logout: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to log out. Please try again.')),
+      );
+    }
+  }
+
+  Future<void> _fetchNotifications() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      final response = await Supabase.instance.client
+          .from('notifications')
+          .select()
+          .eq('status', 'pending')
+          .order('timestamp', ascending: false);
+
+      setState(() {
+        _notifications = List<Map<String, dynamic>>.from(response);
+        _filteredNotifications = _notifications;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching notifications: $e');
+      setState(() {
+        _errorMessage = 'Failed to fetch notifications. Please try again.';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _markAsResolved(int notificationId) async {
+    try {
+      await Supabase.instance.client
+          .from('notifications')
+          .update({'status': 'resolved'})
+          .eq('id', notificationId);
+      await _fetchNotifications();
+    } catch (e) {
+      print('Error marking notification as resolved: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to mark as resolved. Please try again.')),
+      );
+    }
+  }
+
+  void _filterNotifications(String query) {
+    setState(() {
+      _filteredNotifications = _notifications.where((notification) {
+        final typeLower = notification['type'].toString().toLowerCase();
+        final searchLower = query.toLowerCase();
+
+        return typeLower.contains(searchLower);
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Guard Home')),
-      body: Center(child: Text('Welcome, Guard!')),
+      appBar: AppBar(
+        title: Text('Guard Home'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
+      ),
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : _errorMessage.isNotEmpty
+              ? Center(child: Text(_errorMessage))
+              : Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          labelText: 'Search by notification type',
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                        onChanged: _filterNotifications,
+                      ),
+                    ),
+                    Expanded(
+                      child: _filteredNotifications.isEmpty
+                          ? Center(child: Text('No pending notifications'))
+                          : ListView.builder(
+                              itemCount: _filteredNotifications.length,
+                              itemBuilder: (context, index) {
+                                final notification =
+                                    _filteredNotifications[index];
+                                return ListTile(
+                                  title: Text(
+                                      _getNotificationTitle(notification['type'])),
+                                  subtitle:
+                                      Text('Time: ${notification['timestamp']}'),
+                                  trailing: ElevatedButton(
+                                    onPressed: () =>
+                                        _markAsResolved(notification['id']),
+                                    child: Text('Mark as Resolved'),
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+                  ],
+                ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _fetchNotifications,
+        child: Icon(Icons.refresh),
+      ),
     );
+  }
+
+  String _getNotificationTitle(String type) {
+    switch (type) {
+      case 'expected_guest':
+        return 'Expected Guest';
+      case 'expected_package':
+        return 'Expected Package';
+      case 'file_complaint':
+        return 'New Complaint Filed';
+      case 'emergency':
+        return 'EMERGENCY';
+      default:
+        return 'Unknown Notification';
+    }
   }
 }
