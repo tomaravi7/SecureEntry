@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../main.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -12,16 +13,17 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _houseController = TextEditingController();
   String _userType = 'resident';
 
+  bool _isLoading = false;
+  bool _hasError = false;
+
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     _nameController.dispose();
     _phoneController.dispose();
     _houseController.dispose();
@@ -30,37 +32,47 @@ class _SignUpState extends State<SignUp> {
 
   Future<void> _signUp() async {
     if (_formKey.currentState!.validate()) {
-      try {
-        final response =
-            await Supabase.instance.client.from('pending_accounts').insert({
-          'email': _emailController.text,
-          'name': _nameController.text,
-          'phone': _phoneController.text,
-          'user_type': _userType,
-          'address': _houseController.text,
-          'status': 'pending',
-        }).execute();
+      setState(() {
+        _isLoading = true;
+        _hasError = false;
+      });
 
-        if (response.status == 201) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'Signup request submitted. Please wait for admin approval.'),
-            ),
-          );
-          context.go('/');
-        }
+      try {
+        final response = await supabase.from('users_account').upsert([
+          {
+            'email': _emailController.text,
+            'name': _nameController.text,
+            'phone': _phoneController.text,
+            'user_type': _userType,
+            'address': _houseController.text,
+            'status': 'pending',
+          }
+        ]);
       } on PostgrestException catch (error) {
+        setState(() {
+          _hasError = true;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Signup request failed: ${error.message}')),
         );
       } catch (error) {
+        setState(() {
+          _hasError = true;
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('An unexpected error occurred: $error')),
         );
       } finally {
         if (mounted) {
-          setState(() {});
+          setState(() {
+            _isLoading = false;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+                content: Text(
+                    'Signup request submitted. Please wait for admin approval.')),
+          );
+          context.go('/');
         }
       }
     }
@@ -80,7 +92,10 @@ class _SignUpState extends State<SignUp> {
               children: [
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(labelText: 'Full Name'),
+                  decoration: InputDecoration(
+                    labelText: 'Full Name',
+                    errorText: _hasError ? 'Invalid Input' : null,
+                  ),
                   autofillHints: const [AutofillHints.name],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -91,7 +106,10 @@ class _SignUpState extends State<SignUp> {
                 ),
                 TextFormField(
                   controller: _houseController,
-                  decoration: const InputDecoration(labelText: 'Address'),
+                  decoration: InputDecoration(
+                    labelText: 'Address',
+                    errorText: _hasError ? 'Invalid Input' : null,
+                  ),
                   autofillHints: const [AutofillHints.fullStreetAddress],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -102,7 +120,10 @@ class _SignUpState extends State<SignUp> {
                 ),
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    errorText: _hasError ? 'Invalid Input' : null,
+                  ),
                   autofillHints: const [AutofillHints.email],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -116,7 +137,10 @@ class _SignUpState extends State<SignUp> {
                 ),
                 TextFormField(
                   controller: _phoneController,
-                  decoration: const InputDecoration(labelText: 'Phone Number'),
+                  decoration: InputDecoration(
+                    labelText: 'Phone Number',
+                    errorText: _hasError ? 'Invalid Input' : null,
+                  ),
                   autofillHints: const [AutofillHints.telephoneNumber],
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -124,14 +148,6 @@ class _SignUpState extends State<SignUp> {
                     }
                     return null;
                   },
-                ),
-                TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(
-                      labelText:
-                          'Password will be sent to you via email after approval'),
-                  obscureText: true,
-                  enabled: false,
                 ),
                 DropdownButtonFormField<String>(
                   value: _userType,
@@ -149,8 +165,10 @@ class _SignUpState extends State<SignUp> {
                 ),
                 const SizedBox(height: 24),
                 ElevatedButton(
-                  onPressed: _signUp,
-                  child: const Text('Sign Up'),
+                  onPressed: _isLoading ? null : _signUp,
+                  child: _isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text('Sign Up'),
                 ),
                 ElevatedButton(
                   onPressed: () {

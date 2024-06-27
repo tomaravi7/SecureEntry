@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
+import '../main.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -58,10 +59,10 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<String?> _getUserRole(String userId) async {
     try {
-      final response = await Supabase.instance.client
+      final response = await supabase
           .from('user_roles')
           .select('role')
-          .eq('id', userId)
+          .eq('user_id', userId)
           .single();
 
       return response['role'] as String?;

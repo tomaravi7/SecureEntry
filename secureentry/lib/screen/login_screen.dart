@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:secureentry/main.dart';
 import 'dart:async';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -36,8 +37,7 @@ class _LoginPageState extends State<LoginPage> {
         return;
       }
 
-      final AuthResponse res =
-          await Supabase.instance.client.auth.signInWithPassword(
+      final AuthResponse res = await supabase.auth.signInWithPassword(
         email: userEmail,
         password: userPassword,
       );
@@ -91,22 +91,23 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<String?> _getUserRole(String userId) async {
     try {
-      final response = await Supabase.instance.client
+      final response = await supabase
           .from('user_roles')
           .select('role')
-          .eq('id', userId)
+          .eq('user_id', userId)
           .single();
+      print(response);
 
       return response['role'] as String?;
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error fetching user role on splash screen: $e'),
+            content: Text('Error fetching user role on login: $e'),
           ),
         );
       }
-      print('Error fetching user role on splash screen: $e');
+      print('Error fetching user role on login screen: $e');
       return null;
     }
   }
