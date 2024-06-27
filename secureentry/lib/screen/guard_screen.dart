@@ -37,7 +37,10 @@ class _GuardScreenState extends State<GuardScreen> {
       router.go('/');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to log out. Please try again.')),
+        const SnackBar(
+          content: Text('Failed to log out. Please try again.'),
+          backgroundColor: Color.fromARGB(255, 91, 47, 209),
+        ),
       );
     }
   }
@@ -108,7 +111,9 @@ class _GuardScreenState extends State<GuardScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Failed to mark as resolved. Please try again. $e')),
+          content: Text('Failed to mark as resolved. Please try again. $e'),
+          backgroundColor: Color.fromARGB(255, 91, 47, 209),
+        ),
       );
     }
   }
@@ -127,7 +132,10 @@ class _GuardScreenState extends State<GuardScreen> {
   Future<void> _callResident(dynamic phoneNumber) async {
     if (phoneNumber == null || phoneNumber.toString().trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No phone number available')),
+        const SnackBar(
+          content: Text('No phone number available'),
+          backgroundColor: Color.fromARGB(255, 91, 47, 209),
+        ),
       );
       return;
     }
@@ -137,7 +145,10 @@ class _GuardScreenState extends State<GuardScreen> {
 
     if (formattedPhoneNumber.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Invalid phone number')),
+        const SnackBar(
+          content: Text('Invalid phone number'),
+          backgroundColor: Color.fromARGB(255, 91, 47, 209),
+        ),
       );
       return;
     }
@@ -152,12 +163,18 @@ class _GuardScreenState extends State<GuardScreen> {
         await launchUrl(launchUri);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not launch phone call')),
+          const SnackBar(
+            content: Text('Could not launch phone call'),
+            backgroundColor: Color.fromARGB(0, 0, 0, 209),
+          ),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error launching phone call: $e')),
+        SnackBar(
+          content: Text('Error launching phone call: $e'),
+          backgroundColor: Color.fromARGB(255, 91, 47, 209),
+        ),
       );
     }
   }
@@ -197,6 +214,7 @@ class _GuardScreenState extends State<GuardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Guard Dashboard'),
+        backgroundColor: Color.fromARGB(255, 91, 47, 209),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -220,7 +238,14 @@ class _GuardScreenState extends State<GuardScreen> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 91, 47, 209),
+                              width: 2.0,
+                            ),
+                          ),
                         ),
+                        style: TextStyle(color: Colors.white),
                         onChanged: _filterNotifications,
                       ),
                     ),
@@ -271,7 +296,7 @@ class _GuardScreenState extends State<GuardScreen> {
                                             Text(
                                                 'Address: ${notification['resident_address'] ?? 'N/A'}'),
                                             Text(
-                                                'Recived At: ${DateFormat('MMM d, y HH:mm').format(timestamp)}'),
+                                                'Received At: ${DateFormat('MMM d, y HH:mm').format(timestamp)}'),
                                             if (notification['message'] !=
                                                     null &&
                                                 notification['message']
@@ -290,6 +315,14 @@ class _GuardScreenState extends State<GuardScreen> {
                                                   onPressed: () => _callResident(
                                                       notification[
                                                           'resident_phone']),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Color.fromARGB(
+                                                            255, 91, 47, 209),
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                  ),
                                                 ),
                                                 ElevatedButton(
                                                   onPressed: () =>
@@ -297,6 +330,14 @@ class _GuardScreenState extends State<GuardScreen> {
                                                           notification['id']),
                                                   child: const Text(
                                                       'Mark as Resolved'),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Color.fromARGB(
+                                                            255, 91, 47, 209),
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                  ),
                                                 ),
                                               ],
                                             ),
@@ -314,7 +355,9 @@ class _GuardScreenState extends State<GuardScreen> {
       floatingActionButton: FloatingActionButton(
         onPressed: _fetchNotifications,
         child: const Icon(Icons.refresh),
+        backgroundColor: Color.fromARGB(255, 91, 47, 209),
       ),
+      backgroundColor: Colors.black,
     );
   }
 

@@ -29,6 +29,7 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Email and password are required'),
+            backgroundColor: Color.fromARGB(255, 91, 47, 209),
           ),
         );
         setState(() {
@@ -48,6 +49,7 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Logged in successfully as ${user.email}'),
+            backgroundColor: Color.fromARGB(255, 91, 47, 209),
           ),
         );
       }
@@ -78,6 +80,7 @@ class _LoginPageState extends State<LoginPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error on login: ${e.message}'),
+          backgroundColor: Color.fromARGB(255, 91, 47, 209),
         ),
       );
       context.go('/');
@@ -105,6 +108,7 @@ class _LoginPageState extends State<LoginPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error fetching user role on login: $e'),
+            backgroundColor: Color.fromARGB(255, 91, 47, 209),
           ),
         );
       }
@@ -136,73 +140,151 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Secure Entry',
-          style: TextStyle(
-            fontSize: 34,
-            fontWeight: FontWeight.w500,
-            decorationStyle: TextDecorationStyle.solid,
-            decoration: TextDecoration.underline,
-          ),
-        ),
+        title: const Text('Secure Entry'),
+        backgroundColor: Color.fromARGB(0, 0, 0, 209),
       ),
+      backgroundColor: Colors.black,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Align(
-              alignment: Alignment.topLeft,
-              child: Text(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const SizedBox(height: 100.0),
+              // Placeholder for the logo
+              Image.asset('assets/image/login.png', height: 100.0),
+              const SizedBox(height: 32.0),
+              const Text(
                 'LOGIN',
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 24.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
-            ),
-            const SizedBox(height: 5),
-            TextField(
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Email',
-              ),
-              onChanged: (value) => setState(() {
-                userEmail = value;
-              }),
-            ),
-            TextField(
-              obscureText: obscure,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'Password',
-                hintText: 'Enter your password',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    obscure ? Icons.visibility : Icons.visibility_off,
+              const SizedBox(height: 16.0),
+              TextField(
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.white),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      obscure = !obscure;
-                    });
-                  },
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(
+                        color: Color.fromARGB(255, 91, 47, 209), width: 2.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
                 ),
+                style: TextStyle(
+                    color: Colors.white, fontFamily: 'YourProfessionalFont'),
+                onChanged: (value) => setState(() {
+                  userEmail = value;
+                }),
               ),
-              onChanged: (value) => setState(() {
-                userPassword = value;
-              }),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: isLoading ? null : signIn,
-              child: Text(isLoading ? 'Loading...' : 'Login'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                context.go('/signup');
-              },
-              child: const Text('Don\'t have an account? Sign up'),
-            ),
-          ]
-              .map((e) => Padding(padding: const EdgeInsets.all(16), child: e))
-              .toList(),
+              const SizedBox(height: 16.0),
+              TextField(
+                obscureText: obscure,
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  labelStyle: TextStyle(color: Colors.white),
+                  hintText: 'Enter your password',
+                  hintStyle: TextStyle(color: Colors.white),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      obscure ? Icons.visibility : Icons.visibility_off,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        obscure = !obscure;
+                      });
+                    },
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(
+                        color: Color.fromARGB(255, 91, 47, 209), width: 2.0),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: Colors.white),
+                  ),
+                ),
+                style: TextStyle(
+                    color: Colors.white, fontFamily: 'YourProfessionalFont'),
+                onChanged: (value) => setState(() {
+                  userPassword = value;
+                }),
+              ),
+              const SizedBox(height: 32.0),
+              ElevatedButton(
+                onPressed: isLoading ? null : signIn,
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.disabled)) {
+                        return Colors.grey; // Disabled color
+                      }
+                      return Color.fromARGB(255, 91, 47, 209); // Regular color
+                    },
+                  ),
+                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.disabled)) {
+                        return Colors.black; // Disabled text color
+                      }
+                      return Colors.white; // Regular text color
+                    },
+                  ),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                ),
+                child: Text(isLoading ? 'Loading...' : 'Login'),
+              ),
+              const SizedBox(height: 16.0),
+              ElevatedButton(
+                onPressed: () {
+                  context.go('/signup');
+                },
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.disabled)) {
+                        return Colors.grey; // Disabled color
+                      }
+                      return Colors.white; // Regular color
+                    },
+                  ),
+                  foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                    (Set<MaterialState> states) {
+                      if (states.contains(MaterialState.disabled)) {
+                        return Colors.black; // Disabled text color
+                      }
+                      return Color.fromARGB(
+                          255, 91, 47, 209); // Regular text color
+                    },
+                  ),
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                    ),
+                  ),
+                ),
+                child: const Text('Don\'t have an account? Sign up'),
+              ),
+            ],
+          ),
         ),
       ),
     );

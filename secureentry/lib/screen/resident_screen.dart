@@ -24,7 +24,10 @@ class _ResidentScreenState extends State<ResidentScreen> {
   Future _notifyGuard(BuildContext context) async {
     if (_notificationType.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a notification type')),
+        const SnackBar(
+          content: Text('Please select a notification type'),
+          backgroundColor: Color.fromARGB(0, 0, 0, 209),
+        ),
       );
       return;
     }
@@ -41,12 +44,18 @@ class _ResidentScreenState extends State<ResidentScreen> {
         }
       ]);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Guard notified successfully')),
+        const SnackBar(
+          content: Text('Guard notified successfully'),
+          backgroundColor: Color.fromARGB(255, 91, 47, 209),
+        ),
       );
       _resetForm();
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to notify guard: $error')),
+        SnackBar(
+          content: Text('Failed to notify guard: $error'),
+          backgroundColor: Color.fromARGB(255, 91, 47, 209),
+        ),
       );
     }
   }
@@ -83,6 +92,7 @@ class _ResidentScreenState extends State<ResidentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resident Home'),
+        backgroundColor: Color.fromARGB(255, 255, 255, 255),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -97,13 +107,21 @@ class _ResidentScreenState extends State<ResidentScreen> {
           children: [
             Text(
               'Welcome, ${Supabase.instance.client.auth.currentUser!.email}',
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
             const Text(
               'Select Notification Type:',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 10),
             Wrap(
@@ -128,7 +146,12 @@ class _ResidentScreenState extends State<ResidentScreen> {
               decoration: const InputDecoration(
                 hintText: 'Enter additional details',
                 border: OutlineInputBorder(),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                      color: Color.fromARGB(255, 91, 47, 209), width: 2.0),
+                ),
               ),
+              style: TextStyle(color: Colors.white),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -137,11 +160,17 @@ class _ResidentScreenState extends State<ResidentScreen> {
               label: Text(_selectedTime != null
                   ? 'Expected Time: ${DateFormat('HH:mm').format(_selectedTime!)}'
                   : 'Select Expected Time'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 91, 47, 209),
+                foregroundColor: Colors.white,
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () => _notifyGuard(context),
               style: ElevatedButton.styleFrom(
+                backgroundColor: Color.fromARGB(255, 91, 47, 209),
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 15),
               ),
               child: const Text('Submit Notification',
@@ -150,6 +179,7 @@ class _ResidentScreenState extends State<ResidentScreen> {
           ],
         ),
       ),
+      backgroundColor: Colors.black,
     );
   }
 
@@ -165,9 +195,10 @@ class _ResidentScreenState extends State<ResidentScreen> {
       label: Text(label),
       style: ElevatedButton.styleFrom(
         backgroundColor: _notificationType == type
-            ? (isEmergency ? Colors.red : Theme.of(context).primaryColor)
-            : null,
-        foregroundColor: _notificationType == type ? Colors.white : null,
+            ? (isEmergency ? Colors.red : Color.fromARGB(255, 91, 47, 209))
+            : Colors.white,
+        foregroundColor:
+            _notificationType == type ? Colors.white : Colors.black,
       ),
     );
   }

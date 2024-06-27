@@ -166,7 +166,7 @@ class _AdminScreenState extends State<AdminScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 91, 47, 209),
+        backgroundColor: const Color.fromARGB(0, 0, 0, 209),
         title:
             const Text('Admin Approval', style: TextStyle(color: Colors.white)),
         actions: [

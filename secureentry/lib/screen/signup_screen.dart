@@ -69,8 +69,12 @@ class _SignUpState extends State<SignUp> {
           });
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content: Text(
-                    'Signup request submitted. Please wait for admin approval.')),
+              content: Text(
+                'Signup request submitted. Please wait for admin approval.',
+                style: TextStyle(color: Colors.white),
+              ),
+              backgroundColor: Color.fromARGB(255, 91, 47, 209),
+            ),
           );
           context.go('/');
         }
@@ -81,105 +85,254 @@ class _SignUpState extends State<SignUp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign Up')),
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: const Text('Sign Up'),
+        backgroundColor: Color.fromARGB(0, 0, 0, 209),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: AutofillGroup(
           child: Form(
             key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Full Name',
-                    errorText: _hasError ? 'Invalid Input' : null,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Placeholder for the logo
+                  Image.asset('assets/image/register.png', height: 100.0),
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _nameController,
+                    decoration: InputDecoration(
+                      labelText: 'Full Name',
+                      labelStyle: TextStyle(color: Colors.white),
+                      errorText: _hasError ? 'Invalid Input' : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                            color: Color.fromARGB(255, 91, 47, 209),
+                            width: 2.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'YourProfessionalFont'),
+                    autofillHints: const [AutofillHints.name],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your name';
+                      }
+                      return null;
+                    },
                   ),
-                  autofillHints: const [AutofillHints.name],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _houseController,
-                  decoration: InputDecoration(
-                    labelText: 'Address',
-                    errorText: _hasError ? 'Invalid Input' : null,
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _houseController,
+                    decoration: InputDecoration(
+                      labelText: 'Address',
+                      labelStyle: TextStyle(color: Colors.white),
+                      errorText: _hasError ? 'Invalid Input' : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                            color: Color.fromARGB(255, 91, 47, 209),
+                            width: 2.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'YourProfessionalFont'),
+                    autofillHints: const [AutofillHints.fullStreetAddress],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your address';
+                      }
+                      return null;
+                    },
                   ),
-                  autofillHints: const [AutofillHints.fullStreetAddress],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your address';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    errorText: _hasError ? 'Invalid Input' : null,
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: TextStyle(color: Colors.white),
+                      errorText: _hasError ? 'Invalid Input' : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                            color: Color.fromARGB(255, 91, 47, 209),
+                            width: 2.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'YourProfessionalFont'),
+                    autofillHints: const [AutofillHints.email],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      if (!value.contains('@')) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
                   ),
-                  autofillHints: const [AutofillHints.email],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                ),
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    errorText: _hasError ? 'Invalid Input' : null,
+                  const SizedBox(height: 16.0),
+                  TextFormField(
+                    controller: _phoneController,
+                    decoration: InputDecoration(
+                      labelText: 'Phone Number',
+                      labelStyle: TextStyle(color: Colors.white),
+                      errorText: _hasError ? 'Invalid Input' : null,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                            color: Color.fromARGB(255, 91, 47, 209),
+                            width: 2.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'YourProfessionalFont'),
+                    autofillHints: const [AutofillHints.telephoneNumber],
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your phone number';
+                      }
+                      return null;
+                    },
                   ),
-                  autofillHints: const [AutofillHints.telephoneNumber],
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
-                    }
-                    return null;
-                  },
-                ),
-                DropdownButtonFormField<String>(
-                  value: _userType,
-                  decoration: const InputDecoration(labelText: 'User Type'),
-                  items: const [
-                    DropdownMenuItem(
-                        child: Text('Resident'), value: 'resident'),
-                    DropdownMenuItem(child: Text('Guard'), value: 'guard'),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      _userType = value!;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _signUp,
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('Sign Up'),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    context.go('/');
-                  },
-                  child: const Text('Already have an account? Sign In'),
-                ),
-              ]
-                  .map((e) =>
-                      Padding(padding: const EdgeInsets.all(16), child: e))
-                  .toList(),
+                  const SizedBox(height: 16.0),
+                  DropdownButtonFormField<String>(
+                    value: _userType,
+                    decoration: InputDecoration(
+                      labelText: 'User Type',
+                      labelStyle: TextStyle(color: Colors.white),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(
+                            color: Color.fromARGB(255, 91, 47, 209),
+                            width: 2.0),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: Colors.white),
+                      ),
+                    ),
+                    items: const [
+                      DropdownMenuItem(
+                        child: Text('Resident'),
+                        value: 'resident',
+                      ),
+                      DropdownMenuItem(
+                        child: Text('Guard'),
+                        value: 'guard',
+                      ),
+                    ],
+                    onChanged: (value) {
+                      setState(() {
+                        _userType = value!;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: _isLoading ? null : _signUp,
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.disabled)) {
+                            return Colors.grey; // Disabled color
+                          }
+                          return Color.fromARGB(
+                              255, 91, 47, 209); // Regular color
+                        },
+                      ),
+                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.disabled)) {
+                            return Colors.black; // Disabled text color
+                          }
+                          return Colors.white; // Regular text color
+                        },
+                      ),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text('Sign Up'),
+                  ),
+                  const SizedBox(height: 16.0),
+                  ElevatedButton(
+                    onPressed: () {
+                      context.go('/');
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.disabled)) {
+                            return Colors.grey; // Disabled color
+                          }
+                          return Colors.white; // Regular color
+                        },
+                      ),
+                      foregroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.disabled)) {
+                            return Colors.black; // Disabled text color
+                          }
+                          return Color.fromARGB(
+                              255, 91, 47, 209); // Regular text color
+                        },
+                      ),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                      ),
+                    ),
+                    child: const Text('Already have an account? Sign In'),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
