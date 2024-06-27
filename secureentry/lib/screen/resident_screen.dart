@@ -1,36 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
+import '../main.dart';
 
 class ResidentScreen extends StatefulWidget {
   const ResidentScreen({super.key});
 
   @override
-  State<ResidentScreen> createState() => _ResidentScreenState();
+  State createState() => _ResidentScreenState();
 }
 
 class _ResidentScreenState extends State<ResidentScreen> {
-  Future<void> _logout(BuildContext context) async {
+  final TextEditingController _messageController = TextEditingController();
+  DateTime? _selectedTime;
+  String _notificationType = '';
+
+  Future _logout(BuildContext context) async {
     await Supabase.instance.client.auth.signOut();
     context.go('/');
   }
 
-  Future<void> _notifyGuard(
-      BuildContext context, String notificationType) async {
-    try {
-      await Supabase.instance.client.from('notifications').insert({
-        'resident_id': Supabase.instance.client.auth.currentUser!.id,
-        'type': notificationType,
-        'status': 'pending',
-        'timestamp': DateTime.now().toIso8601String(),
-      });
+  Future _notifyGuard(BuildContext context) async {
+    if (_notificationType.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Guard notified successfully')),
+        const SnackBar(content: Text('Please select a notification type')),
       );
+      return;
+    }
+
+    try {
+      await supabase.from('notifications').upsert([
+        {
+          'resident_email': Supabase.instance.client.auth.currentUser!.email,
+          'type': _notificationType,
+          'message': _messageController.text,
+          'expected_time': _selectedTime?.toIso8601String(),
+          'noti_status': 'pending',
+          'timestamp': DateTime.now().toIso8601String(),
+        }
+      ]);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Guard notified successfully')),
+      );
+      _resetForm();
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to notify guard: $error')),
       );
+    }
+  }
+
+  void _resetForm() {
+    setState(() {
+      _notificationType = '';
+      _messageController.clear();
+      _selectedTime = null;
+    });
+  }
+
+  Future<void> _selectTime(BuildContext context) async {
+    final TimeOfDay? pickedTime = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+
+    if (pickedTime != null) {
+      setState(() {
+        _selectedTime = DateTime(
+          DateTime.now().year,
+          DateTime.now().month,
+          DateTime.now().day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+      });
     }
   }
 
@@ -46,35 +90,91 @@ class _ResidentScreenState extends State<ResidentScreen> {
           ),
         ],
       ),
-      body: Center(
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('Welcome, Resident!', style: TextStyle(fontSize: 24)),
+            Text(
+              'Welcome, ${Supabase.instance.client.auth.currentUser!.email}',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Select Notification Type:',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                _buildNotificationButton(
+                    'expected_guest', 'Expecting Guest', Icons.person),
+                _buildNotificationButton('expected_package',
+                    'Expecting Package', Icons.local_shipping),
+                _buildNotificationButton(
+                    'file_complaint', 'File a Complaint', Icons.report_problem),
+                _buildNotificationButton(
+                    'emergency', 'Report Emergency', Icons.emergency,
+                    isEmergency: true),
+              ],
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: _messageController,
+              maxLines: 3,
+              decoration: const InputDecoration(
+                hintText: 'Enter additional details',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () => _selectTime(context),
+              icon: const Icon(Icons.access_time),
+              label: Text(_selectedTime != null
+                  ? 'Expected Time: ${DateFormat('HH:mm').format(_selectedTime!)}'
+                  : 'Select Expected Time'),
+            ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () => _notifyGuard(context, 'expected_guest'),
-              child: const Text('Notify Guard: Expecting Guest'),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => _notifyGuard(context, 'expected_package'),
-              child: const Text('Notify Guard: Expecting Package'),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => _notifyGuard(context, 'file_complaint'),
-              child: const Text('File a Complaint'),
-            ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => _notifyGuard(context, 'emergency'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text('Report Emergency'),
+              onPressed: () => _notifyGuard(context),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 15),
+              ),
+              child: const Text('Submit Notification',
+                  style: TextStyle(fontSize: 18)),
             ),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildNotificationButton(String type, String label, IconData icon,
+      {bool isEmergency = false}) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        setState(() {
+          _notificationType = type;
+        });
+      },
+      icon: Icon(icon),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: _notificationType == type
+            ? (isEmergency ? Colors.red : Theme.of(context).primaryColor)
+            : null,
+        foregroundColor: _notificationType == type ? Colors.white : null,
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
   }
 }

@@ -43,6 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       );
       final User? user = res.user;
       final Session? session = res.session;
+
       if (user != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

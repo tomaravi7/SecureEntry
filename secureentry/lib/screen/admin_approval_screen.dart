@@ -166,7 +166,7 @@ class _AdminScreenState extends State<AdminScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF6750A4),
+        backgroundColor: const Color.fromARGB(255, 91, 47, 209),
         title:
             const Text('Admin Approval', style: TextStyle(color: Colors.white)),
         actions: [
@@ -189,12 +189,13 @@ class _AdminScreenState extends State<AdminScreen> {
                 labelStyle: const TextStyle(color: Colors.white70),
                 prefixIcon: const Icon(Icons.search, color: Colors.white70),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFF6750A4)),
+                  borderSide:
+                      const BorderSide(color: Color.fromARGB(255, 91, 47, 209)),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide:
-                      const BorderSide(color: Color(0xFF6750A4), width: 2),
+                  borderSide: const BorderSide(
+                      color: Color.fromARGB(255, 91, 47, 209), width: 2),
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
@@ -203,7 +204,8 @@ class _AdminScreenState extends State<AdminScreen> {
           Expanded(
             child: _isLoading
                 ? const Center(
-                    child: CircularProgressIndicator(color: Color(0xFF6750A4)))
+                    child: CircularProgressIndicator(
+                        color: Color.fromARGB(255, 91, 47, 209)))
                 : _filteredPendingAccounts.isEmpty
                     ? const Center(
                         child: Text('No pending accounts',
@@ -216,8 +218,9 @@ class _AdminScreenState extends State<AdminScreen> {
                             margin: const EdgeInsets.symmetric(
                                 vertical: 8, horizontal: 16),
                             decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: const Color(0xFF6750A4)),
+                              border: Border.all(
+                                  color:
+                                      const Color.fromARGB(255, 91, 47, 209)),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: ExpansionTile(
@@ -231,7 +234,8 @@ class _AdminScreenState extends State<AdminScreen> {
                               trailing: ElevatedButton(
                                 onPressed: () => _approveAccount(account),
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: const Color(0xFF6750A4),
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 91, 47, 209),
                                   foregroundColor: Colors.white,
                                 ),
                                 child: const Text('Approve'),
@@ -265,7 +269,7 @@ class _AdminScreenState extends State<AdminScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _fetchPendingAccounts,
-        backgroundColor: const Color(0xFF6750A4),
+        backgroundColor: const Color.fromARGB(255, 91, 47, 209),
         child: const Icon(Icons.refresh, color: Colors.white),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
