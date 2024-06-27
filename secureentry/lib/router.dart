@@ -1,37 +1,37 @@
 import 'package:go_router/go_router.dart';
-import './screens/login_screen.dart';
-import './screens/resident_home_screen.dart';
-import './screens/guard_home_screen.dart';
-import './screens/signup_screen.dart';
-import './screens/admin_approval_screen.dart';
-import './screens/splash_screen.dart';  // Import the new SplashScreen
+import './screen/login_screen.dart';
+import './screen/resident_screen.dart';
+import './screen/guard_screen.dart';
+import './screen/signup_screen.dart';
+import './screen/admin_approval_screen.dart';
+import './screen/splash_screen.dart'; // Import the new SplashScreen
 
 final router = GoRouter(
-  initialLocation: '/splash',  // Set the initial route to the splash screen
+  initialLocation: '/splash', // Set the initial route to the splash screen
   routes: [
     GoRoute(
       path: '/splash',
-      builder: (context, state) => SplashScreen(),
+      builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(
       path: '/',
-      builder: (context, state) => LoginScreen(),
+      builder: (context, state) => const LoginPage(),
     ),
     GoRoute(
       path: '/signup',
-      builder: (context, state) => SignupScreen(),
+      builder: (context, state) => const SignUp(),
     ),
     GoRoute(
       path: '/resident_home',
-      builder: (context, state) => ResidentHomeScreen(),
+      builder: (context, state) => const ResidentScreen(),
     ),
     GoRoute(
       path: '/guard_home',
-      builder: (context, state) => GuardHomeScreen(),
+      builder: (context, state) => const GuardScreen(),
     ),
     GoRoute(
       path: '/admin_approval',
-      builder: (context, state) => AdminApprovalScreen(),
+      builder: (context, state) => const AdminScreen(),
     ),
   ],
 );

@@ -3,23 +3,26 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({super.key});
+
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _checkAuth());
+    WidgetsBinding.instance.addPostFrameCallback((_) => redirect());
   }
 
-  Future<void> _checkAuth() async {
+  Future<void> redirect() async {
     try {
+      await Future.delayed(const Duration(seconds: 2));
+      if (!mounted) return;
       final session = Supabase.instance.client.auth.currentSession;
-
       if (session != null) {
-        final userRole = await _getUserRole(session.user!.id);
+        final userRole = await _getUserRole(session.user.id);
         if (userRole != null) {
           switch (userRole) {
             case 'admin':
@@ -41,8 +44,15 @@ class _SplashScreenState extends State<SplashScreen> {
         context.go('/');
       }
     } catch (e) {
-      print('Error recovering session: $e');
-      context.go('/');
+      if (mounted) {
+        print('Error on splash screen: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error on splash screen: $e'),
+          ),
+        );
+        context.go('/');
+      }
     }
   }
 
@@ -52,20 +62,25 @@ class _SplashScreenState extends State<SplashScreen> {
           .from('user_roles')
           .select('role')
           .eq('id', userId)
-          .single()
-          .execute();
+          .single();
 
-
-      return response.data['role'] as String?;
+      return response['role'] as String?;
     } catch (e) {
-      print('Error fetching user role: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error fetching user role on splash screen: $e'),
+          ),
+        );
+      }
+      print('Error fetching user role on splash screen: $e');
       return null;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: Center(
         child: CircularProgressIndicator(),
       ),
