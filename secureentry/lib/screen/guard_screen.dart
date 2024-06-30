@@ -38,7 +38,8 @@ class _GuardScreenState extends State<GuardScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Failed to log out. Please try again.'),
+          content: Text('Failed to log out. Please try again.',
+              style: TextStyle(color: Colors.white)),
           backgroundColor: Color.fromARGB(255, 91, 47, 209),
         ),
       );
@@ -111,7 +112,8 @@ class _GuardScreenState extends State<GuardScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to mark as resolved. Please try again. $e'),
+          content: Text('Failed to mark as resolved. Please try again. $e',
+              style: TextStyle(color: Colors.white)),
           backgroundColor: Color.fromARGB(255, 91, 47, 209),
         ),
       );
@@ -214,7 +216,7 @@ class _GuardScreenState extends State<GuardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Guard Dashboard'),
-        backgroundColor: Color.fromARGB(255, 91, 47, 209),
+        backgroundColor: Color.fromARGB(0, 0, 0, 209),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),

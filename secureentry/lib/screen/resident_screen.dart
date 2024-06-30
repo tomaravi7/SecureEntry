@@ -25,8 +25,9 @@ class _ResidentScreenState extends State<ResidentScreen> {
     if (_notificationType.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please select a notification type'),
-          backgroundColor: Color.fromARGB(0, 0, 0, 209),
+          content: Text('Please select a notification type',
+              style: TextStyle(color: Colors.white)),
+          backgroundColor: Color.fromARGB(255, 91, 47, 209),
         ),
       );
       return;
@@ -45,7 +46,8 @@ class _ResidentScreenState extends State<ResidentScreen> {
       ]);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Guard notified successfully'),
+          content: Text('Guard notified successfully',
+              style: TextStyle(color: Colors.white)),
           backgroundColor: Color.fromARGB(255, 91, 47, 209),
         ),
       );
@@ -53,7 +55,8 @@ class _ResidentScreenState extends State<ResidentScreen> {
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to notify guard: $error'),
+          content: Text('Failed to notify guard: $error',
+              style: const TextStyle(color: Colors.white)),
           backgroundColor: Color.fromARGB(255, 91, 47, 209),
         ),
       );
@@ -92,7 +95,7 @@ class _ResidentScreenState extends State<ResidentScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resident Home'),
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+        backgroundColor: Color.fromARGB(0, 0, 0, 255),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
